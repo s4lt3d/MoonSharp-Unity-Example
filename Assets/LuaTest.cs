@@ -4,38 +4,79 @@ using System;
 
 public class LuaTest : MonoBehaviour
 {
+    Script luaScript = new Script();
+    DynValue luaUpdateFunction;
+
     void Start()
     {
-        Script state = new Script();
-
-        // Register functions. In MoonSharp, you can simply expose C# methods to Lua by adding them as globals.
-        state.Globals["print"] = (Action<string>)LuaPrint;
-        state.Globals["magnitude"] = (Func<float, float, float>)CalculateMagnitude;
+        // Register functions. 
+        luaScript.Globals["print"] = (Action<string>)LuaPrint;
+        luaScript.Globals["magnitude"] = (Func<float, float, float>)CalculateMagnitude;
+        luaScript.Globals["time"] = (Func<float>)GetTime;
 
         string lua_code = @"
-                x = 3
-                y = 4
-                z = magnitude(x, y)
-                print('z = ' .. z)
-            ";
+            -- Called from C# script 
+            function update()
+                local currentTime = time()  -- Get time from C# script
+                print('Time since startup: ' .. currentTime)
+            end
 
-        Debug.Log("Running Lua Script");
+            x = 3
+            y = 4
+            z = magnitude(x, y)
+            print('z = ' .. z)
+        ";
 
-        state.DoString(lua_code);
+        try
+        {
+            luaScript.DoString(lua_code);
+        }
+        catch (ScriptRuntimeException e)
+        {
+            Debug.LogError("Lua error: " + e.DecoratedMessage);
+        }
 
-        // Get variables from the script. In MoonSharp, it's a bit different.
-        DynValue xValue = state.Globals.Get("x");
+        // Register callable functions. 
+        luaUpdateFunction = luaScript.Globals.Get("update");
+
+
+        DynValue xValue = luaScript.Globals.Get("x");
         Debug.Log("Getting variable x from state: " + xValue.Number);
+        CallLuaUpdate();
     }
 
-    // MoonSharp directly supports standard C# function signatures, so we don't need "params object[]".
+
+    void Update()
+    {
+        CallLuaUpdate();
+    }
+
+    private void CallLuaUpdate()
+    {
+        // Safely call the Lua update function if it exists
+        if (luaUpdateFunction.Type == DataType.Function)
+        {
+            luaScript.Call(luaUpdateFunction);
+        }
+    }
+
+    // MoonSharp will call into these functions from script
+
+    // lua script: print( string )
     static public void LuaPrint(string message)
     {
         Debug.Log(message);
     }
 
+    // lua script: float magnitude( float float )
     static public float CalculateMagnitude(float x, float y)
     {
         return (float)Math.Sqrt(x * x + y * y);
+    }
+
+    // lua script: float time() 
+    static public float GetTime()
+    {
+        return (float)Time.realtimeSinceStartup;
     }
 }
