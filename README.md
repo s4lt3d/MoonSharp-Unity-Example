@@ -4,7 +4,7 @@ This example demonstrates how to integrate Lua scripting into a Unity project us
 
 ## Prerequisites
 
-- Unity 2022.3
+- Tested with Unity 2022.3. Should work with Unity 2018 and above. 
 - [MoonSharp library](https://www.moonsharp.org/) (which serves as the Lua script engine)
 
 ## Overview
