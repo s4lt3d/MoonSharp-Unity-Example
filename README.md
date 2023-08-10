@@ -5,7 +5,7 @@ This example demonstrates how to integrate Lua scripting into a Unity project us
 ## Prerequisites
 
 - Unity 2022.3
-- MoonSharp library (which serves as the Lua script engine)
+- [MoonSharp library](https://www.moonsharp.org/) (which serves as the Lua script engine)
 
 ## Overview
 
@@ -49,11 +49,10 @@ DynValue xValue = luaScript.Globals.Get("x");
 Debug.Log("Getting variable x from state: " + xValue.Number);
 ```
 ## How to Run the Example
-Ensure you have Unity 2022.3 installed.
-Import the MoonSharp library into your Unity project.
-Create a new MonoBehaviour script named LuaTest and paste the provided code into it.
-Attach the LuaTest script to a GameObject in your Unity scene.
-Run the scene. Observe the Unity console for messages logged from both C# and Lua.
-Important Notes
-Always wrap your DoString calls with a try-catch to handle any Lua runtime errors gracefully.
-Ensure that the C# methods you expose to Lua have the correct signature to match the expected Lua function calls.
+- Ensure you have Unity 2022.3 installed.
+- Import the [MoonSharp library](https://www.moonsharp.org/) into your Unity project.
+- The LuaTest monobehaviour is attached to the camera in the example code. Attach it to any game object. 
+- Run the scene. Observe the Unity console for messages logged from both C# and Lua.
+- Important Notes
+- Always wrap your DoString calls with a try-catch to handle any Lua runtime errors gracefully.
+- Ensure that the C# methods you expose to Lua have the correct signature to match the expected Lua function calls.
